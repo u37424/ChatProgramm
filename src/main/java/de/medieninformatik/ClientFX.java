@@ -74,7 +74,11 @@ public class ClientFX extends Application {
                                 do {
                                     try {
                                         Message message = (Message) ois.readObject();
-                                        String msg = message+"\n\n";
+                                        String msg = message + "\n";
+                                        if (message.getSender().equals(InetAddress.getLocalHost()))
+                                            chat.setStyle("-fx-text-alignment: right;");
+                                        else
+                                            chat.setStyle("-fx-text-alignment: left;");
                                         chat.setText(msg);
                                     } catch (IOException e) {
                                         System.err.println("Host disconnected.");
