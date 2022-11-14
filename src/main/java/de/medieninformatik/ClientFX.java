@@ -30,7 +30,7 @@ public class ClientFX extends Application {
         final TextField text = new TextField();
         final Label label = new Label();
         final TextField chat = new TextField();
-        box.getChildren().addAll(text, label);
+        box.getChildren().addAll(text, label, chat);
         stage.setScene(new Scene(box));
         stage.show();
 
@@ -42,6 +42,7 @@ public class ClientFX extends Application {
                 oos.writeObject(new Message(input, InetAddress.getLocalHost()));
             } catch (IOException e) {
                 System.err.println("Error while sending message.");
+                System.exit(0);
             }
         });
 
@@ -54,6 +55,7 @@ public class ClientFX extends Application {
                         do {
                             try {
                                 Message message = (Message) ois.readObject();
+                                System.out.println("Message "+ message);
                                 Platform.runLater(() -> {
                                     try {
                                         if (message.getSender().equals(InetAddress.getLocalHost()))
@@ -63,6 +65,7 @@ public class ClientFX extends Application {
                                         e.printStackTrace();
                                     }
                                     chat.setText(chat.getText() + message);
+                                    chat.setText("Test123");
                                 });
                             } catch (IOException e) {
                                 System.err.println("Host disconnected.");
@@ -80,7 +83,7 @@ public class ClientFX extends Application {
         };
         service.start();
 
-        connectToServer("localhost", 6000);
+        connectToServer("192.168.43.26", 6000);
     }
 
     private void connectToServer(String server, int port) {
