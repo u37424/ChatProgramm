@@ -5,11 +5,12 @@ import javafx.scene.paint.Color;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 public class Message implements Serializable {
     private String text;
     private String alias;
-    private  Color color;
+    private String colorUni;
 
     final static long serialVersionUID = 123456789L;
 
@@ -19,6 +20,17 @@ public class Message implements Serializable {
             this.alias = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             e.printStackTrace();
+        }
+        Random r = new Random();
+        int n = r.nextInt(1,7);
+        switch (n){
+            case 1: this.colorUni = "\u001B[41m"; break;
+            case 2: this.colorUni = "\u001B[42m";break;
+            case 3: this.colorUni = "\u001B[43m";break;
+            case 4: this.colorUni = "\u001B[44m";break;
+            case 5: this.colorUni = "\u001B[45m";break;
+            case 6: this.colorUni = "\u001B[46m";break;
+            case 7: this.colorUni = "\u001B[47m";break;
         }
     }
 
@@ -32,6 +44,6 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return alias+": "+text;
+        return colorUni+alias+": "+text;
     }
 }
