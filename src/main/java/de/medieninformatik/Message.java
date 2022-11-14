@@ -24,13 +24,13 @@ public class Message implements Serializable {
         Random r = new Random();
         int n = r.nextInt(1,7);
         switch (n){
-            case 1: this.colorUni = "\u001B[41m"; break;
-            case 2: this.colorUni = "\u001B[42m";break;
-            case 3: this.colorUni = "\u001B[43m";break;
-            case 4: this.colorUni = "\u001B[44m";break;
-            case 5: this.colorUni = "\u001B[45m";break;
-            case 6: this.colorUni = "\u001B[46m";break;
-            case 7: this.colorUni = "\u001B[47m";break;
+            case 1: this.colorUni = "\u001B[0m"; break;
+            case 2: this.colorUni = "\u001B[30m";break;
+            case 3: this.colorUni = "\u001B[31m";break;
+            case 4: this.colorUni = "\u001B[32m";break;
+            case 5: this.colorUni = "\u001B[33m";break;
+            case 6: this.colorUni = "\u001B[34m";break;
+            case 7: this.colorUni = "\u001B[35m";break;
         }
     }
 
