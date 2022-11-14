@@ -31,6 +31,7 @@ public class ClientFX extends Application {
         final TextField text = new TextField();
         final Label label = new Label();
         chat = new TextField();
+        chat.setPrefColumnCount(100);
         box.getChildren().addAll(text, label, chat);
         stage.setScene(new Scene(box));
         stage.show();
@@ -73,10 +74,8 @@ public class ClientFX extends Application {
                                 do {
                                     try {
                                         Message message = (Message) ois.readObject();
-                                        if(message.getSender().equals(InetAddress.getLocalHost()))
-                                            chat.setAlignment(Pos.BASELINE_RIGHT);
-                                        else chat.setAlignment(Pos.BASELINE_LEFT);
-                                        chat.setText(chat.getText()+message);
+                                        String msg = message+"\n\n";
+                                        chat.setText(msg);
                                     } catch (IOException e) {
                                         System.err.println("Host disconnected.");
                                         System.exit(0);
