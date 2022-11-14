@@ -22,6 +22,7 @@ import java.net.UnknownHostException;
 public class ClientFX extends Application {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
+    private TextField chat;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -29,7 +30,7 @@ public class ClientFX extends Application {
         box.setPrefSize(1000, 750);
         final TextField text = new TextField();
         final Label label = new Label();
-        final TextField chat = new TextField();
+        chat = new TextField();
         box.getChildren().addAll(text, label, chat);
         stage.setScene(new Scene(box));
         stage.show();
@@ -45,43 +46,6 @@ public class ClientFX extends Application {
                 System.exit(0);
             }
         });
-
-        Service<Void> service = new Service<>() {
-            @Override
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    @Override
-                    protected Void call() {
-                        do {
-                            try {
-                                Message message = (Message) ois.readObject();
-                                System.out.println("Message "+ message);
-                                Platform.runLater(() -> {
-                                    try {
-                                        if (message.getSender().equals(InetAddress.getLocalHost()))
-                                            chat.setAlignment(Pos.BASELINE_RIGHT);
-                                        else chat.setAlignment(Pos.BASELINE_LEFT);
-                                    } catch (UnknownHostException e) {
-                                        e.printStackTrace();
-                                    }
-                                    chat.setText(chat.getText() + message);
-                                    chat.setText("Test123");
-                                });
-                            } catch (IOException e) {
-                                System.err.println("Host disconnected.");
-                                System.exit(0);
-                                break;
-                            } catch (ClassNotFoundException e) {
-                                System.err.println("Unknown Input received.");
-                                break;
-                            }
-                        } while (true);
-                        return null;
-                    }
-                };
-            }
-        };
-        service.start();
 
         connectToServer("192.168.43.26", 6000);
     }
@@ -100,6 +64,34 @@ public class ClientFX extends Application {
                     return;
                 }
                 System.out.println("Connected to " + socket.getInetAddress().getHostName());
+                Service<Void> service = new Service<>() {
+                    @Override
+                    protected Task<Void> createTask() {
+                        return new Task<>() {
+                            @Override
+                            protected Void call() {
+                                do {
+                                    try {
+                                        Message message = (Message) ois.readObject();
+                                        if(message.getSender().equals(InetAddress.getLocalHost()))
+                                            chat.setAlignment(Pos.BASELINE_RIGHT);
+                                        else chat.setAlignment(Pos.BASELINE_LEFT);
+                                        chat.setText(chat.getText()+message);
+                                    } catch (IOException e) {
+                                        System.err.println("Host disconnected.");
+                                        System.exit(0);
+                                        break;
+                                    } catch (ClassNotFoundException e) {
+                                        System.err.println("Unknown Input received.");
+                                        break;
+                                    }
+                                } while (true);
+                                return null;
+                            }
+                        };
+                    }
+                };
+                service.start();
                 while (true) ;
             } catch (SocketException | UnknownHostException e) {
                 System.err.println("Host disconnected.");
