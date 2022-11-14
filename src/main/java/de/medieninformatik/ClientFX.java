@@ -3,6 +3,10 @@ package de.medieninformatik;
 import javafx.application.Application;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -11,30 +15,38 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Scanner;
 
 public class ClientFX extends Application {
-    /**
-     * The main entry point for all JavaFX applications.
-     * The start method is called after the init method has returned,
-     * and after the system is ready for the application to begin running.
-     *
-     * <p>
-     * NOTE: This method is called on the JavaFX Application Thread.
-     * </p>
-     *
-     * @param primaryStage the primary stage for this application, onto which
-     *                     the application scene can be set.
-     *                     Applications may create other stages, if needed, but they will not be
-     *                     primary stages.
-     * @throws Exception if something goes wrong
-     */
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        connectToServer("localhost", 6000);
+    public void start(Stage stage) throws Exception {
+        VBox box = new VBox();
+        box.setPrefSize(1000, 750);
+        final TextField text = new TextField();
+        final Label label = new Label();
+        box.getChildren().addAll(text, label);
+        stage.setScene(new Scene(box));
+        stage.show();
+
+        ObjectOutputStream s = connectToServer("localhost", 6000);
+        if (s == null) return;
+
+        text.setOnAction(event -> {
+            String input = text.getText();
+            text.clear();
+            System.out.println(input);
+            sendMessage(new Message(input), s);
+        });
     }
 
-    private void connectToServer(String server, int port) {
+    private void sendMessage(Message message, ObjectOutputStream s) {
+        try {
+            s.writeObject(message);
+        } catch (IOException e) {
+            System.err.println("Error while sending message.");
+        }
+    }
+
+    private ObjectOutputStream connectToServer(String server, int port) {
         try (Socket socket = new Socket(server, port)) {
             //Streams
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
@@ -44,7 +56,7 @@ public class ClientFX extends Application {
             boolean suc = (Boolean) ois.readObject();
             if (!suc) {
                 System.err.println("Host denied access.");
-                return;
+                return null;
             }
             System.out.println("Connected to " + socket.getInetAddress().getHostName());
 
@@ -73,15 +85,7 @@ public class ClientFX extends Application {
             };
 
             service.start();
-
-            //Eingabe für Client
-            Scanner scanner = new Scanner(System.in);
-
-            //Schreiben
-            do {
-                Message message = new Message(scanner.nextLine());
-                oos.writeObject(message);
-            } while (true);
+            return oos;
         } catch (SocketException | UnknownHostException e) {
             System.err.println("Host disconnected.");
         } catch (IOException e) {
@@ -89,5 +93,7 @@ public class ClientFX extends Application {
         } catch (ClassNotFoundException e) {
             System.err.println("Received wrong input.");
         }
+        System.err.println("No Host found.");
+        return null;
     }
 }
