@@ -49,7 +49,7 @@ public class ClientFX extends Application {
             }
         });
 
-        connectToServer("192.168.43.26", 6000);
+        connectToServer("localhost", 6000);
     }
 
     private void connectToServer(String server, int port) {
@@ -76,8 +76,6 @@ public class ClientFX extends Application {
                                     try {
                                         Message message = (Message) ois.readObject();
                                         String msg = message + "\n";
-                                        if (message.getSender().equals(InetAddress.getLocalHost()))
-                                            msg = "                  " + msg;
                                         chat.setText(chat.getText() + msg);
                                     } catch (IOException e) {
                                         System.err.println("Host disconnected.");
@@ -110,7 +108,6 @@ public class ClientFX extends Application {
     }
 
     public static void main(String[] args) {
-        (new Server(6000)).start();
-        //Application.launch(ClientFX.class, args);
+        Application.launch(ClientFX.class, args);
     }
 }

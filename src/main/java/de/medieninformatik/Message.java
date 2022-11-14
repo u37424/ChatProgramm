@@ -1,6 +1,9 @@
 package de.medieninformatik;
 
 
+import javafx.application.Application;
+import javafx.scene.paint.Color;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -38,5 +41,4 @@ public class Message implements Serializable {
     public InetAddress getSender() {
         return sender;
     }
-
 }
