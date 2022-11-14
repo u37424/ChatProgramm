@@ -58,7 +58,7 @@ public class MessengerService implements Runnable {
                 System.out.println(message);
                 clients.forEach((u, o) -> {
                     try {
-                        if (!o.equals(oos)) o.writeObject(message);
+                        o.writeObject(message);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
