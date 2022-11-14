@@ -17,6 +17,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class ClientFX extends Application {
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
     @Override
     public void start(Stage stage) throws Exception {
         VBox box = new VBox();
@@ -27,14 +29,14 @@ public class ClientFX extends Application {
         stage.setScene(new Scene(box));
         stage.show();
 
-        ObjectOutputStream s = connectToServer("localhost", 6000);
-        if (s == null) return;
+        connectToServer("localhost", 6000);
+        if (oos == null) return;
 
         text.setOnAction(event -> {
             String input = text.getText();
             text.clear();
             System.out.println(input);
-            sendMessage(new Message(input), s);
+            sendMessage(new Message(input), oos);
         });
     }
 
@@ -46,17 +48,17 @@ public class ClientFX extends Application {
         }
     }
 
-    private ObjectOutputStream connectToServer(String server, int port) {
+    private void connectToServer(String server, int port) {
         try (Socket socket = new Socket(server, port)) {
             //Streams
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            oos = new ObjectOutputStream(socket.getOutputStream());
             oos.flush();
 
-            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            ois = new ObjectInputStream(socket.getInputStream());
             boolean suc = (Boolean) ois.readObject();
             if (!suc) {
                 System.err.println("Host denied access.");
-                return null;
+                return;
             }
             System.out.println("Connected to " + socket.getInetAddress().getHostName());
 
@@ -85,7 +87,9 @@ public class ClientFX extends Application {
             };
 
             service.start();
-            return oos;
+            while (true){
+
+            }
         } catch (SocketException | UnknownHostException e) {
             System.err.println("Host disconnected.");
         } catch (IOException e) {
@@ -94,6 +98,5 @@ public class ClientFX extends Application {
             System.err.println("Received wrong input.");
         }
         System.err.println("No Host found.");
-        return null;
     }
 }
