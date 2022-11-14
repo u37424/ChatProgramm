@@ -7,6 +7,7 @@ import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -22,7 +23,7 @@ import java.net.UnknownHostException;
 public class ClientFX extends Application {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
-    private TextField chat;
+    private TextArea chat;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -30,8 +31,8 @@ public class ClientFX extends Application {
         box.setPrefSize(1000, 750);
         final TextField text = new TextField();
         final Label label = new Label();
-        chat = new TextField();
-        chat.setPrefColumnCount(100);
+        chat = new TextArea();
+        chat.setPrefRowCount(700);
         box.getChildren().addAll(text, label, chat);
         stage.setScene(new Scene(box));
         stage.show();
@@ -76,10 +77,8 @@ public class ClientFX extends Application {
                                         Message message = (Message) ois.readObject();
                                         String msg = message + "\n";
                                         if (message.getSender().equals(InetAddress.getLocalHost()))
-                                            chat.setStyle("-fx-text-alignment: right;");
-                                        else
-                                            chat.setStyle("-fx-text-alignment: left;");
-                                        chat.setText(msg);
+                                            msg = "                  " + msg;
+                                        chat.setText(chat.getText() + msg);
                                     } catch (IOException e) {
                                         System.err.println("Host disconnected.");
                                         System.exit(0);
@@ -108,5 +107,10 @@ public class ClientFX extends Application {
         }
         );
         t.start();
+    }
+
+    public static void main(String[] args) {
+        (new Server(6000)).start();
+        //Application.launch(ClientFX.class, args);
     }
 }
